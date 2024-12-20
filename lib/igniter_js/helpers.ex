@@ -19,7 +19,14 @@ defmodule IgniterJS.Helpers do
     end
   end
 
-  def call_nif_fn(file_path, caller_function, processing_fn) do
+  def call_nif_fn(file_path, caller_function, processing_fn, type \\ :content)
+
+  def call_nif_fn(file_content, caller_function, processing_fn, :content) do
+    processing_fn.(file_content)
+    |> normalize_output(caller_function)
+  end
+
+  def call_nif_fn(file_path, caller_function, processing_fn, :path) do
     case read_and_validate_file(file_path) do
       {:ok, file_content} ->
         processing_fn.(file_content)
