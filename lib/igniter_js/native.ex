@@ -1,4 +1,5 @@
-defmodule MishkaChelekom.Nifs.OXC do
+defmodule IgniterJs.Native do
+  @moduledoc false
   use Rustler, otp_app: :igniter_js, crate: "igniter_js"
 
   # When your NIF is loaded, it will override this function.

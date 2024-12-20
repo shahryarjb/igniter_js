@@ -27,3 +27,6 @@ igniter_js-*.tar
 
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
+
+# Developer environment files
+.DS_Store

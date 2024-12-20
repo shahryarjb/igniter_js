@@ -1,6 +1,5 @@
-#[rustler::nif]
-fn add(a: i64, b: i64) -> i64 {
-    a + b
-}
+pub mod atoms;
+pub mod helpers;
+pub mod parser;
 
 rustler::init!("Elixir.IgniterJS.Native");
