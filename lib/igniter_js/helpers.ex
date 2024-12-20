@@ -1,4 +1,10 @@
 defmodule IgniterJS.Helpers do
+  @moduledoc """
+  A module that contains helper functions for IgniterJS. For example it helps to normalize the
+  output of the NIFs, read and validate the file, and call the NIF function with the
+  given file path or content.
+  """
+
   @doc """
   Normalize the output of the NIFs. It is a macro and returns a tuple with the first
   element as the output, the second element as the caller function name, and the
