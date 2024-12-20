@@ -1,6 +1,14 @@
 defmodule IgniterJS.Helpers do
   @doc """
-  Normalize the output of the NIFs.
+  Normalize the output of the NIFs. It is a macro and returns a tuple with the first
+  element as the output, the second element as the caller function name, and the
+  third element as the status.
+
+  ```elixir
+  require IgniterJS.Helpers
+  normalize_output({:ok, :fun_atom, result}, __ENV__.function)
+  normalize_output({:error, :fun_atom, result}, __ENV__.function)
+  ```
   """
   defmacro normalize_output(output, caller_function) do
     quote do
@@ -8,6 +16,14 @@ defmodule IgniterJS.Helpers do
     end
   end
 
+  @doc """
+  Read and validate the file. It returns the file content if the file exists and the
+  extension is `.js` or `.ts`, otherwise, it returns an error tuple.
+
+  ```elixir
+  read_and_validate_file("/path/to/file.js")
+  ```
+  """
   def read_and_validate_file(file_path) do
     with true <- File.exists?(file_path),
          true <- Path.extname(file_path) in [".js", ".ts"],
@@ -19,6 +35,16 @@ defmodule IgniterJS.Helpers do
     end
   end
 
+  @doc """
+  Call the NIF function with the given file path or content and return the result.
+  It helps to change the function name as atom based on its caller function.
+
+  ```elixir
+  call_nif_fn("/path/to/file.js", __ENV__.function, fn content -> content end, :path)
+  call_nif_fn("file content", __ENV__.function, fn content -> content end)
+  call_nif_fn("file content", __ENV__.function, fn content -> content end, :content)
+  ```
+  """
   def call_nif_fn(file_path, caller_function, processing_fn, type \\ :content)
 
   def call_nif_fn(file_content, caller_function, processing_fn, :content) do
