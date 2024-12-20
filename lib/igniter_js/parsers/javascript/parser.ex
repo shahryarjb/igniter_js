@@ -1,6 +1,7 @@
-defmodule IgniterJs.Parsers.Javascript.Parser do
-  alias IgniterJs.Native
-  require IgniterJs.Helpers
+defmodule IgniterJS.Parsers.Javascript.Parser do
+  alias IgniterJS.Native
+  require IgniterJS.Helpers
+  import IgniterJS.Helpers, only: [call_nif_fn: 3]
 
   @doc """
   Check if a module is imported in the given file.

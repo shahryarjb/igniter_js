@@ -1,4 +1,4 @@
-defmodule IgniterJs.Native do
+defmodule IgniterJS.Native do
   @moduledoc false
   use Rustler, otp_app: :igniter_js, crate: "igniter_js"
 

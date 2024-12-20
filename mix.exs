@@ -1,4 +1,4 @@
-defmodule IgniterJs.MixProject do
+defmodule IgniterJS.MixProject do
   use Mix.Project
   @version "0.0.1"
 
@@ -16,7 +16,7 @@ defmodule IgniterJs.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {IgniterJs.Application, []}
+      mod: {IgniterJS.Application, []}
     ]
   end
 

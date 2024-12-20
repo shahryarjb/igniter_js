@@ -1,6 +1,6 @@
 use crate::atoms;
 use crate::helpers::encode_response;
-use crate::parser::ast::*;
+use crate::parsers::javascript::ast::*;
 use oxc::allocator::Allocator;
 use rustler::{Env, NifResult, Term};
 

@@ -1,0 +1,139 @@
+defmodule IgniterJSTest.Parsers.Javascript.ParserTest do
+  use ExUnit.Case
+  alias IgniterJS.Parsers.Javascript.Parser
+
+  @valid_app_js "test/assets/validApp.js"
+  @invalid_app_without_live_socket "test/assets/invalidAppWithoutLiveSocket.js"
+  @invalid_app_with_removed_import "test/assets/invalidAppWithRemovedImport.js"
+  @invalid_app_without_live_socket_object "test/assets/invalidAppWithoutLiveSockerObject.js"
+  @invalid_app_without_hooks_key "test/assets/invalidAppWithoutHooksKey.js"
+  @valid_app_with_hooks_objects "test/assets/validAppWithSomeHooksObjects.js"
+
+  test "User requested module imported? :: module_imported" do
+    {:ok, :module_imported, true} =
+      assert Parser.module_imported(@valid_app_js, "phoenix_live_view")
+
+    {:error, :module_imported, false} =
+      assert Parser.module_imported(@invalid_app_without_live_socket, "none_live_view")
+
+      assert Parser.module_imported?(@valid_app_js, "phoenix_live_view")
+
+        assert !Parser.module_imported?(@invalid_app_without_live_socket, "none_live_view")
+  end
+
+  test "Insert some js lines for import modules :: insert_imports" do
+    imports = """
+    import { foo } from "module-name";
+    import bar from "another-module";
+    """
+
+    considerd_output =
+      "import { foo } from \"module-name\";\nimport bar from \"another-module\";\nlet Hooks = {};\n"
+
+    {:ok, :insert_imports, js_output} =
+      assert Parser.insert_imports(@invalid_app_without_live_socket, imports)
+
+    ^js_output = assert considerd_output
+  end
+
+  test "Remove imported modules :: remove_imports" do
+    none_imported_module_output =
+      "import { foo } from \"module-name\";\nimport bar from \"another-module\";\nlet Hooks = {};\n"
+
+    {:ok, :remove_imports, outptu} =
+      Parser.remove_imports(@invalid_app_with_removed_import, "phoenix_live_view")
+
+    ^none_imported_module_output = assert outptu
+
+    remove_a_module_output = "import bar from \"another-module\";\nlet Hooks = {};\n"
+
+    {:ok, :remove_imports, outptu} =
+      Parser.remove_imports(@invalid_app_with_removed_import, "module-name")
+
+    ^remove_a_module_output = assert outptu
+
+    remove_two_modules_output = "let Hooks = {};\n"
+
+    {:ok, :remove_imports, outptu} =
+      Parser.remove_imports(@invalid_app_with_removed_import, [
+        "module-name",
+        "another-module"
+      ])
+
+    ^remove_two_modules_output = assert outptu
+  end
+
+  test "LiveSocket var exist :: exist_live_socket" do
+    {:ok, :exist_live_socket, true} =
+      assert Parser.exist_live_socket(@valid_app_js)
+
+    {:error, :exist_live_socket, false} =
+      assert Parser.exist_live_socket(@invalid_app_without_live_socket)
+
+      assert Parser.exist_live_socket?(@valid_app_js)
+
+        assert !Parser.exist_live_socket?(@invalid_app_without_live_socket)
+  end
+
+  test "Extend hook objects :: extend_hook_object" do
+    {:error, :extend_hook_object, "liveSocket not found."} =
+      Parser.extend_hook_object(@invalid_app_without_live_socket, "something")
+
+    {:error, :extend_hook_object, "properties not found in the AST."} =
+      Parser.extend_hook_object(@invalid_app_without_live_socket_object, "something")
+
+    considerd_output =
+      "let Hooks = {};\nlet liveSocket = new LiveSocket(\"/live\", Socket, {\n\tlongPollFallbackMs: 2500,\n\tparams: { _csrf_token: csrfToken },\n\thooks: { something }\n});\n"
+
+    {:ok, :extend_hook_object, output} =
+      assert Parser.extend_hook_object(@invalid_app_without_hooks_key, "something")
+
+    ^considerd_output = assert output
+
+    {:ok, :extend_hook_object, output} =
+      assert Parser.extend_hook_object(@invalid_app_without_hooks_key, [
+               "something",
+               "another"
+             ])
+
+    considerd_output =
+      "let Hooks = {};\nlet liveSocket = new LiveSocket(\"/live\", Socket, {\n\tlongPollFallbackMs: 2500,\n\tparams: { _csrf_token: csrfToken },\n\thooks: {\n\t\tsomething,\n\t\tanother\n\t}\n});\n"
+
+    ^considerd_output = assert output
+  end
+
+  test "Remove objects of hooks key inside LiveSocket:: remove_objects_from_hooks" do
+    considerd_output =
+      "let liveSocket = new LiveSocket(\"/live\", Socket, {\n\thooks: {\n\t\t...Hooks,\n\t\tCopyMixInstallationHook,\n\t\tOXCExampleObjectHook\n\t},\n\tlongPollFallbackMs: 2500,\n\tparams: { _csrf_token: csrfToken }\n});\n"
+
+    {:ok, :remove_objects_from_hooks, output} =
+      assert Parser.remove_objects_from_hooks(@valid_app_with_hooks_objects, [
+               "something",
+               "another"
+             ])
+
+    ^considerd_output = assert output
+
+    considerd_output =
+      "let liveSocket = new LiveSocket(\"/live\", Socket, {\n\thooks: {\n\t\t...Hooks,\n\t\tCopyMixInstallationHook\n\t},\n\tlongPollFallbackMs: 2500,\n\tparams: { _csrf_token: csrfToken }\n});\n"
+
+    {:ok, :remove_objects_from_hooks, output} =
+      assert Parser.remove_objects_from_hooks(
+               @valid_app_with_hooks_objects,
+               "OXCExampleObjectHook"
+             )
+
+    ^considerd_output = assert output
+
+    considerd_output =
+      "let liveSocket = new LiveSocket(\"/live\", Socket, {\n\thooks: { ...Hooks },\n\tlongPollFallbackMs: 2500,\n\tparams: { _csrf_token: csrfToken }\n});\n"
+
+    {:ok, :remove_objects_from_hooks, output} =
+      assert Parser.remove_objects_from_hooks(
+               @valid_app_with_hooks_objects,
+               ["OXCExampleObjectHook", "CopyMixInstallationHook"]
+             )
+
+    ^considerd_output = assert output
+  end
+end

@@ -1,4 +1,4 @@
-defmodule IgniterJs.Helpers do
+defmodule IgniterJS.Helpers do
   @doc """
   Normalize the output of the NIFs.
   """
