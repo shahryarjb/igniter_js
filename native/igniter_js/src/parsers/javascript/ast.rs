@@ -1,3 +1,12 @@
+//! Utility functions for manipulating JavaScript Abstract Syntax Trees (ASTs).
+//!
+//! This module provides various tools for working with JavaScript ASTs, including:
+//! - Parsing JavaScript code into an AST.
+//! - Modifying AST nodes such as `hooks` objects or import declarations.
+//! - Performing queries on the AST, such as checking for specific variable declarations.
+//!
+//! The module leverages a Rust-based parser and integrates seamlessly with Elixir through NIFs.
+
 // Based on:
 //
 // Tasks:
@@ -24,7 +33,17 @@ use oxc::{
 
 use std::cell::Cell;
 
-// TODO: Done
+/// Parses JavaScript source code into an AST.
+///
+/// Converts the provided JavaScript source code (`file_content`) into an
+/// abstract syntax tree (AST) using the specified `allocator`.
+///
+/// # Arguments
+/// - `file_content`: The JavaScript source code as a string slice.
+/// - `allocator`: A reference to the memory allocator used during parsing.
+///
+/// # Returns
+/// A `Result` containing the parsed `Program` on success or an error message on failure.
 pub fn source_to_ast<'a>(
     file_content: &'a str,
     allocator: &'a Allocator,
@@ -39,7 +58,19 @@ pub fn source_to_ast<'a>(
     Ok(parse_result.program)
 }
 
-// TODO: Done
+/// Checks if a specific module is imported in the JavaScript source code.
+///
+/// This function parses the given JavaScript source code into an AST
+/// and determines if the specified `module_name` is imported.
+///
+/// # Arguments
+/// - `file_content`: The JavaScript source code as a string slice.
+/// - `module_name`: The name of the module to check for imports.
+/// - `allocator`: A reference to the memory allocator used during parsing.
+///
+/// # Returns
+/// A `Result` containing `true` if the module is imported, `false` otherwise,
+/// or an error message if parsing fails.
 pub fn is_module_imported_from_ast<'a>(
     file_content: &str,
     module_name: &str,
@@ -58,7 +89,24 @@ pub fn is_module_imported_from_ast<'a>(
     Ok(false)
 }
 
-// TODO: Done
+/// Inserts new import statements into JavaScript source code.
+///
+/// Parses the provided JavaScript source code into an AST, adds the specified
+/// `import_lines` as import declarations, and ensures no duplicate imports are added.
+/// Returns the updated JavaScript code as a string.
+///
+/// # Arguments
+/// - `file_content`: The JavaScript source code as a string slice.
+/// - `import_lines`: The new import lines to be added, separated by newlines.
+/// - `allocator`: A reference to the memory allocator used during parsing.
+///
+/// # Returns
+/// A `Result` containing the updated JavaScript code as a `String` on success,
+/// or an error message if parsing or insertion fails.
+///
+/// # Behavior
+/// - Ensures duplicate imports are skipped.
+/// - Inserts new import statements after existing ones or at the top if none exist.
 pub fn insert_import_to_ast<'a>(
     file_content: &str,
     import_lines: &str,
@@ -114,7 +162,24 @@ pub fn insert_import_to_ast<'a>(
     Ok(generated_code)
 }
 
-// TODO: Done
+/// Removes specified import statements from JavaScript source code.
+///
+/// Parses the given JavaScript source code into an AST, locates the specified
+/// modules in the `modules` iterator, and removes their corresponding import
+/// declarations. Returns the updated JavaScript code as a string.
+///
+/// # Arguments
+/// - `file_content`: The JavaScript source code as a string slice.
+/// - `modules`: An iterable collection of module names (as strings) to be removed.
+/// - `allocator`: A reference to the memory allocator used during parsing.
+///
+/// # Returns
+/// A `Result` containing the updated JavaScript code as a `String` on success,
+/// or an error message if parsing fails.
+///
+/// # Behavior
+/// - Retains all other import statements and code structure.
+/// - Removes only the specified modules from the import declarations.
 pub fn remove_import_from_ast<'a>(
     file_content: &str,
     modules: impl IntoIterator<Item = impl AsRef<str>>,
@@ -143,7 +208,21 @@ pub fn remove_import_from_ast<'a>(
     Ok(generated_code)
 }
 
-// TODO: Done
+/// Checks if a `liveSocket` variable is declared in the JavaScript AST.
+///
+/// Scans the provided AST to determine if a `liveSocket` variable declaration exists.
+/// This function searches through all variable declarations in the program's body.
+///
+/// # Arguments
+/// - `program`: A reference to the parsed JavaScript AST (`Program`) to search within.
+///
+/// # Returns
+/// - `Ok(true)`: If a `liveSocket` variable declaration is found.
+/// - `Err(false)`: If no such variable declaration exists.
+///
+/// # Behavior
+/// - Iterates through all `VariableDeclaration` nodes in the AST to check
+///   for a variable with the identifier `liveSocket`.
 pub fn find_live_socket_node_from_ast<'a>(program: &'a Program<'a>) -> Result<bool, bool> {
     if program.body.iter().any(|node| {
         if let Statement::VariableDeclaration(var_decl) = node {
@@ -176,7 +255,30 @@ pub fn find_live_socket_node_from_ast<'a>(program: &'a Program<'a>) -> Result<bo
 //     obj_expr.properties.push(new_property);
 // }
 
-// TODO: Done
+/// Extends the `hooks` object in the JavaScript AST by adding new properties.
+///
+/// This function parses the given JavaScript source code, checks for the existence
+/// of a `liveSocket` variable, and adds new properties to the `hooks` object.
+/// If the `hooks` object or `liveSocket` variable is not found, it initializes
+/// or returns an appropriate error.
+///
+/// # Arguments
+/// - `file_content`: The JavaScript source code as a string slice.
+/// - `names`: An iterable collection of property names to be added to the `hooks` object.
+/// - `allocator`: A reference to the memory allocator used during parsing.
+///
+/// # Returns
+/// A `Result` containing the updated JavaScript code as a `String` on success,
+/// or an error message if parsing or manipulation fails.
+///
+/// # Behavior
+/// - Checks for the presence of `liveSocket` in the AST.
+/// - Finds or initializes the `hooks` object in the AST.
+/// - Adds new properties to the `hooks` object without duplicating existing ones.
+///
+/// # Errors
+/// - Returns an error if `liveSocket` is not found in the source code.
+/// - Returns an error if the required `hooks` object properties cannot be located or created.
 pub fn extend_hook_object_to_ast<'a>(
     file_content: &str,
     names: impl IntoIterator<Item = &'a str>,
@@ -214,7 +316,29 @@ pub fn extend_hook_object_to_ast<'a>(
     Ok(generated_code)
 }
 
-// TODO: Done
+/// Removes specified objects from the `hooks` object in the JavaScript AST.
+///
+/// This function parses the given JavaScript source code, checks for the presence of a
+/// `liveSocket` variable, and removes specified properties from the `hooks` object.
+/// If the `hooks` object or `liveSocket` variable is not found, an appropriate error is returned.
+///
+/// # Arguments
+/// - `file_content`: The JavaScript source code as a string slice.
+/// - `object_names`: An iterable collection of object names (as strings) to be removed from the `hooks` object.
+/// - `allocator`: A reference to the memory allocator used during parsing.
+///
+/// # Returns
+/// A `Result` containing the updated JavaScript code as a `String` on success,
+/// or an error message if parsing or manipulation fails.
+///
+/// # Behavior
+/// - Ensures the `liveSocket` variable exists in the AST.
+/// - Locates the `hooks` object or initializes it if absent.
+/// - Removes specified properties from the `hooks` object while retaining all others.
+///
+/// # Errors
+/// - Returns an error if `liveSocket` is not found in the source code.
+/// - Returns an error if the `hooks` object properties cannot be located in the AST.
 pub fn remove_objects_of_hooks_from_ast(
     file_content: &str,
     object_names: impl IntoIterator<Item = impl AsRef<str>>,
