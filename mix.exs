@@ -19,7 +19,7 @@ defmodule IgniterJS.MixProject do
   end
 
   defp description() do
-    "Codemods for js for Elixir, using rust NIFs"
+    "Codemods for JavaScript in Elixir, powered by a high-performance Rust parser integrated via NIFs"
   end
 
   defp package() do
