@@ -5,7 +5,7 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
-## [v0.0.1](https://github.com/ash-project/igniter_js/compare/v0.0.1...v0.0.1) (2024-12-24)
+## [v0.1.0](https://github.com/ash-project/igniter_js/compare/v0.1.0...v0.1.0) (2024-12-24)
 
 
 
