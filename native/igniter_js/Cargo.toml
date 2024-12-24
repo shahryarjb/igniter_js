@@ -1,0 +1,14 @@
+[package]
+name = "igniter_js"
+version = "0.0.1"
+authors = ["Shahryar Tavakkoli"]
+edition = "2021"
+
+[lib]
+name = "igniter_js"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+oxc = { version = "0.42.0", features = ["codegen"] }
+rustler = { version = "0.34.0" }

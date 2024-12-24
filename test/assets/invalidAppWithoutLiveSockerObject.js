@@ -1,0 +1,2 @@
+let Hooks = {};
+let liveSocket = {};
