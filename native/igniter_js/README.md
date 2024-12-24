@@ -1,4 +1,4 @@
-# NIF for Elixir.IgniterJS.Native
+# NIF for Elixir.IgniterJs.Native
 
 ## To build the NIF module:
 
@@ -7,7 +7,7 @@
 ## To load the NIF:
 
 ```elixir
-defmodule IgniterJS.Native do
+defmodule IgniterJs.Native do
   use Rustler, otp_app: :igniter_js, crate: "igniter_js"
 
   # When your NIF is loaded, it will override this function.

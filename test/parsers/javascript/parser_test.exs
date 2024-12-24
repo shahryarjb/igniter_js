@@ -1,6 +1,6 @@
 defmodule IgniterJSTest.Parsers.Javascript.ParserTest do
   use ExUnit.Case
-  alias IgniterJS.Parsers.Javascript.Parser
+  alias IgniterJs.Parsers.Javascript.Parser
 
   @valid_app_js "test/assets/validApp.js"
   @invalid_app_without_live_socket "test/assets/invalidAppWithoutLiveSocket.js"

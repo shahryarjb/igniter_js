@@ -1,30 +1,35 @@
-defmodule IgniterJS.MixProject do
+defmodule IgniterJs.MixProject do
   use Mix.Project
-  @version "0.0.1"
+  @version "0.1.0"
   @source_url "https://github.com/ash-project/igniter_js"
+
+  @description """
+  Javascript codemods, powered by a high-performance Rust parser integrated via NIFs
+  """
 
   def project do
     [
       app: :igniter_js,
       version: @version,
-      elixir: "~> 1.17",
-      name: "IgniterJS",
+      elixir: "~> 1.14",
+      package: package(),
+      aliases: aliases(),
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      docs: docs(),
       deps: deps(),
-      description: description(),
+      description: @description,
       package: package(),
-      source_url: @source_url
+      source_url: @source_url,
+      homepage_url: @source_url
     ]
-  end
-
-  defp description() do
-    "Codemods for JavaScript in Elixir, powered by a high-performance Rust parser integrated via NIFs"
   end
 
   defp package() do
     [
+      name: :igniter_js,
       files: ~w(lib .formatter.exs mix.exs LICENSE README*),
+      maintainers: ["Zach Daniel", "Shahryar Tavakkoli"],
       licenses: ["MIT"],
       links: %{
         "GitHub" => @source_url,
@@ -39,11 +44,50 @@ defmodule IgniterJS.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
+  defp docs do
+    [
+      main: "readme",
+      source_ref: "v#{@version}",
+      logo: "logos/igniter-logo.png",
+      extra_section: "GUIDES",
+      before_closing_head_tag: fn type ->
+        if type == :html do
+          """
+          <script>
+            if (location.hostname === "hexdocs.pm") {
+              var script = document.createElement("script");
+              script.src = "https://plausible.io/js/script.js";
+              script.setAttribute("defer", "defer")
+              script.setAttribute("data-domain", "ashhexdocs")
+              document.head.appendChild(script);
+            }
+          </script>
+          """
+        end
+      end,
+      extras: [
+        {"README.md", title: "Home"},
+        "CHANGELOG.md"
+      ],
+      groups_for_extras: [
+        Tutorials: ~r'documentation/tutorials',
+        "How To": ~r'documentation/how_to',
+        Topics: ~r'documentation/topics',
+        DSLs: ~r'documentation/dsls',
+        "About IgniterJs": [
+          "CHANGELOG.md"
+        ]
+      ]
+      # groups_for_modules: [
+      # ]
+    ]
+  end
+
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
       extra_applications: [:logger],
-      mod: {IgniterJS.Application, []}
+      mod: {IgniterJs.Application, []}
     ]
   end
 
@@ -51,7 +95,20 @@ defmodule IgniterJS.MixProject do
   defp deps do
     [
       {:rustler, "~> 0.35.1"},
-      {:ex_doc, "~> 0.35.1", only: [:dev, :test], runtime: false}
+      {:ex_doc, "~> 0.35", only: [:dev, :test], runtime: false},
+      {:ex_check, "~> 0.12", only: [:dev, :test]},
+      {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:sobelow, ">= 0.0.0", only: [:dev, :test], runtime: false},
+      {:git_ops, "~> 2.5", only: [:dev, :test]},
+      {:mix_audit, ">= 0.0.0", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp aliases do
+    [
+      sobelow: "sobelow --skip",
+      credo: "credo --strict"
     ]
   end
 end

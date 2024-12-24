@@ -1,4 +1,4 @@
-defmodule IgniterJS.Native do
+defmodule IgniterJs.Native do
   @moduledoc false
   use Rustler, otp_app: :igniter_js, crate: "igniter_js"
 
@@ -15,5 +15,5 @@ defmodule IgniterJS.Native do
 
   def remove_objects_of_hooks_from_ast_nif(_file_content, _object_names), do: error()
 
-  defp error(), do: :erlang.nif_error(:nif_not_loaded)
+  defp error, do: :erlang.nif_error(:nif_not_loaded)
 end

@@ -1,4 +1,4 @@
-defmodule IgniterJS.Application do
+defmodule IgniterJs.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -8,13 +8,13 @@ defmodule IgniterJS.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: IgniterJS.Worker.start_link(arg)
-      # {IgniterJS.Worker, arg}
+      # Starts a worker by calling: IgniterJs.Worker.start_link(arg)
+      # {IgniterJs.Worker, arg}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: IgniterJS.Supervisor]
+    opts = [strategy: :one_for_one, name: IgniterJs.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end

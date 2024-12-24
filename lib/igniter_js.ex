@@ -1,3 +1,3 @@
-defmodule IgniterJS do
+defmodule IgniterJs do
   @moduledoc false
 end

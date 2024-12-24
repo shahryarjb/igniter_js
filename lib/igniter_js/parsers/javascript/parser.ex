@@ -1,12 +1,16 @@
-defmodule IgniterJS.Parsers.Javascript.Parser do
-  alias IgniterJS.Native
-  import IgniterJS.Helpers, only: [call_nif_fn: 4]
+defmodule IgniterJs.Parsers.Javascript.Parser do
+  @moduledoc """
+  Codemods for JavaScript files.
+  """
+
+  alias IgniterJs.Native
+  import IgniterJs.Helpers, only: [call_nif_fn: 4]
 
   @doc """
   Check if a module is imported in the given file or content or content and returns boolean.
 
   ```elixir
-  alias IgniterJS.Parsers.Javascript.Parser
+  alias IgniterJs.Parsers.Javascript.Parser
   Parser.module_imported?(js_content, "module")
   Parser.module_imported?(js_content, "module", :content)
   Parser.module_imported?("/path/to/file.js", "module", :path)
@@ -20,7 +24,7 @@ defmodule IgniterJS.Parsers.Javascript.Parser do
   Check if a module is imported in the given file or content or contents and return tuple.
 
   ```elixir
-  alias IgniterJS.Parsers.Javascript.Parser
+  alias IgniterJs.Parsers.Javascript.Parser
   Parser.module_imported(js_content, "module")
   Parser.module_imported(js_content, "module", :content)
   Parser.module_imported("/path/to/file.js", "module", :path)
@@ -41,7 +45,7 @@ defmodule IgniterJS.Parsers.Javascript.Parser do
   Insert imports to the given file or content and returns tuple.
 
   ```elixir
-  alias IgniterJS.Parsers.Javascript.Parser
+  alias IgniterJs.Parsers.Javascript.Parser
   Parser.insert_imports(js_content, imports_lines)
   Parser.insert_imports(js_content, imports_lines, :content)
   Parser.insert_imports("/path/to/file.js", imports_lines, :path)
@@ -63,7 +67,7 @@ defmodule IgniterJS.Parsers.Javascript.Parser do
   It returns a tuple.
 
   ```elixir
-  alias IgniterJS.Parsers.Javascript.Parser
+  alias IgniterJs.Parsers.Javascript.Parser
   Parser.remove_imports(js_content, "SomeModule")
   Parser.remove_imports(js_content, ["SomeModule", "AnotherModule"], :content)
   Parser.remove_imports("/path/to/file.js", "SomeModule", :path)
@@ -90,7 +94,7 @@ defmodule IgniterJS.Parsers.Javascript.Parser do
   Check if a LiveSocket var exists in the given file or content and returns boolean.
 
   ```elixir
-  alias IgniterJS.Parsers.Javascript.Parser
+  alias IgniterJs.Parsers.Javascript.Parser
   Parser.exist_live_socket?(js_content)
   Parser.exist_live_socket?(js_content, :content)
   Parser.exist_live_socket?("/path/to/file.js", :path)
@@ -104,7 +108,7 @@ defmodule IgniterJS.Parsers.Javascript.Parser do
   Check if a LiveSocket var exists in the given file or content and returns tuple.
 
   ```elixir
-  alias IgniterJS.Parsers.Javascript.Parser
+  alias IgniterJs.Parsers.Javascript.Parser
   Parser.exist_live_socket(js_content)
   Parser.exist_live_socket(js_content, :content)
   Parser.exist_live_socket("/path/to/file.js", :path)
@@ -127,7 +131,7 @@ defmodule IgniterJS.Parsers.Javascript.Parser do
   It returns a tuple.
 
   ```elixir
-  alias IgniterJS.Parsers.Javascript.Parser
+  alias IgniterJs.Parsers.Javascript.Parser
   Parser.extend_hook_object(js_content, "SomeObject")
   Parser.extend_hook_object(js_content, ["SomeObject", "AnotherObject"], :content)
   Parser.extend_hook_object("/path/to/file.js", "SomeObject", :path)
@@ -156,7 +160,7 @@ defmodule IgniterJS.Parsers.Javascript.Parser do
   It returns a tuple.
 
   ```elixir
-  alias IgniterJS.Parsers.Javascript.Parser
+  alias IgniterJs.Parsers.Javascript.Parser
   Parser.remove_objects_from_hooks(js_content, "SomeObject")
   Parser.remove_objects_from_hooks(js_content, ["SomeObject", "AnotherObject"], :content)
   Parser.remove_objects_from_hooks("/path/to/file.js", "SomeObject", :path)

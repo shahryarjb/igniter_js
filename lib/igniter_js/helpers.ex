@@ -1,6 +1,6 @@
-defmodule IgniterJS.Helpers do
+defmodule IgniterJs.Helpers do
   @moduledoc """
-  A module that contains helper functions for IgniterJS. For example it helps to normalize the
+  A module that contains helper functions for IgniterJs. For example it helps to normalize the
   output of the NIFs, read and validate the file, and call the NIF function with the
   given file path or content.
   """
@@ -11,7 +11,7 @@ defmodule IgniterJS.Helpers do
   third element as the status.
 
   ```elixir
-  require IgniterJS.Helpers
+  require IgniterJs.Helpers
   normalize_output({:ok, :fun_atom, result}, __ENV__.function)
   normalize_output({:error, :fun_atom, result}, __ENV__.function)
   ```
@@ -30,6 +30,7 @@ defmodule IgniterJS.Helpers do
   read_and_validate_file("/path/to/file.js")
   ```
   """
+  # sobelow_skip ["Traversal.FileModule"]
   def read_and_validate_file(file_path) do
     with true <- File.exists?(file_path),
          true <- Path.extname(file_path) in [".js", ".ts"],

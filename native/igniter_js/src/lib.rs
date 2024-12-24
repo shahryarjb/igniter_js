@@ -4,4 +4,4 @@ pub mod parsers {
     pub mod javascript;
 }
 
-rustler::init!("Elixir.IgniterJS.Native");
+rustler::init!("Elixir.IgniterJs.Native");
