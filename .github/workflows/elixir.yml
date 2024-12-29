@@ -17,5 +17,7 @@ jobs:
       igniter-upgrade: false
       rustler-precompiled-var: IGNITERJS_BUILD
       rustler-precompiled-module: IgniterJs.Native
+      env: 
+        IGNITERJS_BUILD: 1
     secrets:
       HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
