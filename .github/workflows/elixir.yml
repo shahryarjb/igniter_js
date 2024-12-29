@@ -7,6 +7,8 @@ on:
   pull_request:
     branches: [main]
   workflow_call:
+env: 
+  IGNITERJS_BUILD: 1
 jobs:
   ash-ci:
     uses: ash-project/ash/.github/workflows/ash-ci.yml@main
@@ -17,7 +19,5 @@ jobs:
       igniter-upgrade: false
       rustler-precompiled-var: IGNITERJS_BUILD
       rustler-precompiled-module: IgniterJs.Native
-    env: 
-      IGNITERJS_BUILD: 1
     secrets:
       HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
