@@ -17,7 +17,6 @@ jobs:
       spark-cheat-sheets: false
       sobelow: false
       igniter-upgrade: false
-      rustler-precompiled-var: IGNITERJS_BUILD
       rustler-precompiled-module: IgniterJs.Native
     secrets:
       HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
