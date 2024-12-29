@@ -23,7 +23,9 @@ defmodule IgniterJs.Native do
         x86_64-unknown-linux-gnu
         x86_64-unknown-linux-musl
       ),
-    force_build: System.get_env("IGNITERJS_BUILD") in ["1", "true"]
+    force_build:
+      System.get_env("IGNITERJS_BUILD") in ["1", "true"] ||
+        System.get_env("ASH_CI_BUILD") in ["1", "true"]
 
   # When your NIF is loaded, it will override this function.
   def is_module_imported_from_ast_nif(_file_content, _module_name), do: error()

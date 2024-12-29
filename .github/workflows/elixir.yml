@@ -7,8 +7,6 @@ on:
   pull_request:
     branches: [main]
   workflow_call:
-env: 
-  IGNITERJS_BUILD: 1
 jobs:
   ash-ci:
     uses: ash-project/ash/.github/workflows/ash-ci.yml@main
