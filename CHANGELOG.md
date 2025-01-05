@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.2.0](https://github.com/ash-project/igniter_js/compare/v0.1.2...v0.2.0) (2025-01-05)
+
+
+
+
+### Features:
+
+* parser: add function to display AST statistics and fix `Clippy` warnings (#7)
+
 ## [v0.1.2](https://github.com/ash-project/igniter_js/compare/v0.1.1...v0.1.2) (2024-12-29)
 
 ### Bug Fixes
