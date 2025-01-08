@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.3.0](https://github.com/ash-project/igniter_js/compare/v0.2.0...v0.3.0) (2025-01-08)
+
+
+
+
+### Features:
+
+* add function to extend limited objects and prevent duplicate object names during extending hooks (#9)
+
 ## [v0.2.0](https://github.com/ash-project/igniter_js/compare/v0.1.2...v0.2.0) (2025-01-05)
 
 
