@@ -26,7 +26,7 @@ use oxc::{
         ObjectProperty, ObjectPropertyKind, PropertyKey, PropertyKind, Statement,
         VariableDeclarator,
     },
-    codegen::Codegen,
+    codegen::{Codegen, CodegenOptions},
     parser::{ParseOptions, Parser, ParserReturn},
     span::{Atom, SourceType, Span},
 };
@@ -51,6 +51,7 @@ pub fn source_to_ast<'a>(
     let source_type = SourceType::default();
     let parser = Parser::new(allocator, file_content, source_type).with_options(ParseOptions {
         parse_regular_expression: true,
+        allow_return_outside_function: true,
         ..ParseOptions::default()
     });
 
@@ -150,10 +151,7 @@ pub fn insert_import_to_ast(
         parsed.program.body.insert(position, new_import);
     }
 
-    let codegen = Codegen::new();
-    let generated_code = codegen.build(&parsed.program).code;
-
-    Ok(generated_code)
+    Ok(codegen(&parsed, false))
 }
 
 /// Removes specified import statements from JavaScript source code.
@@ -197,9 +195,7 @@ pub fn remove_import_from_ast(
         }
     });
 
-    let codegen = Codegen::new();
-    let generated_code = codegen.build(&parsed.program).code;
-    Ok(generated_code)
+    Ok(codegen(&parsed, false))
 }
 
 /// Checks if a `liveSocket` variable is declared in the JavaScript AST.
@@ -297,17 +293,28 @@ pub fn extend_hook_object_to_ast<'a>(
 
         if let Expression::ObjectExpression(obj_expr) = hooks_property {
             for name in names {
-                let new_property = create_and_import_object_into_hook(name, allocator);
-                obj_expr.properties.push(new_property)
+                if !obj_expr.properties.iter().any(|x| match x {
+                    ObjectPropertyKind::SpreadProperty(spread) => spread
+                        .argument
+                        .get_identifier_reference()
+                        .map(|ref_id| ref_id.name == name)
+                        .unwrap_or(false),
+                    ObjectPropertyKind::ObjectProperty(normal) => normal
+                        .value
+                        .get_identifier_reference()
+                        .map(|ref_id| ref_id.name == name)
+                        .unwrap_or(false),
+                }) {
+                    let new_property = create_and_import_object_into_hook(name, allocator);
+                    obj_expr.properties.push(new_property);
+                }
             }
         }
     } else {
         return Err("properties not found in the AST.".to_string());
     }
 
-    let codegen = Codegen::new();
-    let generated_code = codegen.build(&parsed.program).code;
-    Ok(generated_code)
+    Ok(codegen(&parsed, false))
 }
 
 /// Removes specified objects from the `hooks` object in the JavaScript AST.
@@ -374,9 +381,115 @@ pub fn remove_objects_of_hooks_from_ast(
         return Err("properties not found in the AST.".to_string());
     }
 
-    let codegen = Codegen::new();
-    let generated_code = codegen.build(&parsed.program).code;
-    Ok(generated_code)
+    Ok(codegen(&parsed, false))
+}
+
+/// Extends an object's properties in a JavaScript AST with new property names.
+///
+/// # Description
+/// This function takes JavaScript code as a string, parses it into an Abstract Syntax Tree (AST),
+/// and searches for a variable declaration with a specific name. If the variable is an object,
+/// it extends the object's properties with new property names provided by the user.
+///
+/// The function ensures that no duplicate properties are added to the object and modifies the AST
+/// accordingly. Finally, it generates updated JavaScript code from the modified AST.
+///
+/// # Arguments
+/// - `file_content`: A string slice containing the JavaScript source code to be modified.
+/// - `var_name`: The name of the variable to search for in the JavaScript code.
+/// - `object_names`: An iterable collection of property names to add to the object.
+///   - Must implement `IntoIterator` and produce items of type `&'a str`.
+/// - `allocator`: A reference to an `Allocator`, which is used for managing memory during AST manipulation.
+///
+/// # Examples
+/// ```
+/// let js_code = r#"
+///     const Components = {
+///         Hook1,
+///         Hook2
+///     };
+/// "#;
+/// let object_names = vec!["NewHook", "AnotherHook"];
+/// let allocator = Allocator::new();
+///
+/// let result = extend_var_object_property_by_names_to_ast(
+///     js_code,
+///     "Components",
+///     object_names,
+///     &allocator
+/// );
+///
+/// # Error Scenarios
+/// - If the `var_name` does not exist in the provided JavaScript code, the function will return an error:
+///   ```
+///   let result = extend_var_object_property_by_names_to_ast(
+///       js_code,
+///       "NonExistentVariable",
+///       object_names,
+///       &allocator
+///   );
+///   assert!(result.is_err());
+///   ```
+// Ref: https://users.rust-lang.org/t/123707
+pub fn extend_var_object_property_by_names_to_ast<'a>(
+    file_content: &str,
+    var_name: &str,
+    object_names: impl IntoIterator<Item = &'a str> + Clone,
+    allocator: &Allocator,
+) -> Result<String, String> {
+    let mut parsed = source_to_ast(file_content, allocator)?;
+
+    let result = parsed.program.body.iter_mut().find_map(|node| match node {
+        Statement::VariableDeclaration(var_decl) => var_decl
+            .declarations
+            .iter_mut()
+            .map(|decl| {
+                if decl.id.kind.get_binding_identifier().unwrap().name == var_name {
+                    let get_init = &mut decl.init;
+                    if let Some(Expression::ObjectExpression(obj_expr)) = get_init {
+                        for name in object_names.clone() {
+                            if !obj_expr.properties.iter().any(|x| match x {
+                                ObjectPropertyKind::SpreadProperty(spread) => spread
+                                    .argument
+                                    .get_identifier_reference()
+                                    .map(|ref_id| ref_id.name == name)
+                                    .unwrap_or(false),
+                                ObjectPropertyKind::ObjectProperty(normal) => normal
+                                    .value
+                                    .get_identifier_reference()
+                                    .map(|ref_id| ref_id.name == name)
+                                    .unwrap_or(false),
+                            }) {
+                                let new_property =
+                                    create_and_import_object_into_hook(name, allocator);
+                                obj_expr.properties.push(new_property);
+                            }
+                        }
+                    }
+                    Ok(())
+                } else {
+                    Err("Variable not found in javascript body".to_string())
+                }
+            })
+            .next(),
+        _ => None,
+    });
+
+    match result {
+        Some(Ok(_)) => Ok(codegen(&parsed, false)),
+        Some(Err(e)) => Err(e),
+        _ => Err("Variable not found in javascript body or javascript file is invalid".to_string()),
+    }
+}
+
+fn codegen(ret: &ParserReturn<'_>, minify: bool) -> String {
+    Codegen::new()
+        .with_options(CodegenOptions {
+            minify,
+            ..CodegenOptions::default()
+        })
+        .build(&ret.program)
+        .code
 }
 
 fn get_properties<'short, 'long>(
@@ -561,7 +674,9 @@ mod tests {
     #[test]
     fn test_insert_duplicate_import() {
         let js_content = r#"
+            // Change heading:
             import { foo } from "module-name";
+            // Change heading:
             console.log("Duplicate import test");
         "#;
 
@@ -754,7 +869,7 @@ mod tests {
         "#;
 
         let allocator = create_allocator();
-        let object_names = vec!["OXCTestHook", "MishkaHooks"];
+        let object_names = vec!["OXCTestHook", "MishkaHooks", "MishkaHooks", "OXCTestHook"];
         match extend_hook_object_to_ast(js_content, object_names, allocator) {
             Ok(ast) => {
                 println!("Hook object extended successfully. ==> {}", ast);
@@ -792,6 +907,71 @@ mod tests {
                 );
             }
             Err(e) => eprintln!("Error: {}", e),
+        }
+    }
+
+    #[test]
+    fn test_extend_var_object_property_by_names_to_ast() {
+        let js_content = r#"
+            const Components = {
+                ExistingHook1,
+                ExistingHook2
+            };
+        "#;
+
+        let allocator = create_allocator();
+
+        let object_names = vec!["OXCTestHook", "MishkaHooks", "MishkaHooks", "OXCTestHook"];
+        let result = extend_var_object_property_by_names_to_ast(
+            js_content,
+            "Components",
+            object_names,
+            &allocator,
+        );
+
+        assert!(result.is_ok());
+        if let Ok(updated_content) = result {
+            assert!(updated_content.contains("ExistingHook1"));
+            assert!(updated_content.contains("ExistingHook2"));
+            assert!(updated_content.contains("OXCTestHook"));
+            assert!(updated_content.contains("MishkaHooks"));
+        }
+
+        let object_names = vec!["NewHook1", "NewHook2"];
+        let result = extend_var_object_property_by_names_to_ast(
+            js_content,
+            "NonExistentVariable",
+            object_names,
+            &allocator,
+        );
+
+        assert!(result.is_err());
+        if let Err(err) = result {
+            assert_eq!(err, "Variable not found in javascript body".to_string());
+        }
+
+        let js_content = r#"
+            const Components = {
+            };
+        "#;
+
+        let allocator = create_allocator();
+
+        let object_names = vec!["OXCTestHook", "MishkaHooks", "MishkaHooks", "OXCTestHook"];
+        let result = extend_var_object_property_by_names_to_ast(
+            js_content,
+            "Components",
+            object_names,
+            &allocator,
+        );
+
+        assert!(result.is_ok());
+        if let Ok(updated_content) = result {
+            println!("{updated_content}");
+            assert!(!updated_content.contains("ExistingHook1"));
+            assert!(!updated_content.contains("ExistingHook2"));
+            assert!(updated_content.contains("OXCTestHook"));
+            assert!(updated_content.contains("MishkaHooks"));
         }
     }
 }
