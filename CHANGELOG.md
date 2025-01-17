@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.4.1](https://github.com/ash-project/igniter_js/compare/v0.4.0...v0.4.1) (2025-01-17)
+
+
+
+
+### Bug Fixes:
+
+* rebuild NIF
+
 ## [v0.4.0](https://github.com/ash-project/igniter_js/compare/v0.3.0...v0.4.0) (2025-01-17)
 
 
