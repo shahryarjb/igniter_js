@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.4.2](https://github.com/ash-project/igniter_js/compare/v0.4.1...v0.4.2) (2025-01-17)
+
+
+
+
+### Bug Fixes:
+
+* rebuild NIF and downgrade rustler
+
 ## [v0.4.1](https://github.com/ash-project/igniter_js/compare/v0.4.0...v0.4.1) (2025-01-17)
 
 
