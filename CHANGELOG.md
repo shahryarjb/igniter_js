@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.4.4](https://github.com/ash-project/igniter_js/compare/v0.4.3...v0.4.4) (2025-02-16)
+
+
+
+
+### Features:
+
+* improve import deduplication by supporting ImportDefaultSpecifier and ImportNamespaceSpecifier (#16)
+
 ## [v0.4.3](https://github.com/ash-project/igniter_js/compare/v0.4.2...v0.4.3) (2025-01-18)
 
 
