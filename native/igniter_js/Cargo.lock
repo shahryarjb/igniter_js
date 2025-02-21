@@ -48,6 +48,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "auto_impl"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e12882f59de5360c748c4cbf569a042d5fb0eb515f7bea9c1f470b47f6ffbd73"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -371,10 +382,14 @@ checksum = "cb56e1aa765b4b4f3aadfab769793b7087bb03a4ea4920644a6d238e2df5b9ed"
 
 [[package]]
 name = "igniter_js"
-version = "0.4.4"
+version = "0.4.5"
 dependencies = [
  "rustler",
  "swc_common",
+ "swc_css_ast",
+ "swc_css_codegen",
+ "swc_css_parser",
+ "swc_css_visit",
  "swc_ecma_ast",
  "swc_ecma_codegen",
  "swc_ecma_parser",
@@ -407,6 +422,79 @@ name = "itoa"
 version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d75a2a4b1b190afb6f5425f10f6a8f959d2ea0b9c2b1d79553551850539e4674"
+
+[[package]]
+name = "lexical"
+version = "6.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c7aefb36fd43fef7003334742cbf77b243fcd36418a1d1bdd480d613a67968f6"
+dependencies = [
+ "lexical-core",
+]
+
+[[package]]
+name = "lexical-core"
+version = "0.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2cde5de06e8d4c2faabc400238f9ae1c74d5412d03a7bd067645ccbc47070e46"
+dependencies = [
+ "lexical-parse-float",
+ "lexical-parse-integer",
+ "lexical-util",
+ "lexical-write-float",
+ "lexical-write-integer",
+]
+
+[[package]]
+name = "lexical-parse-float"
+version = "0.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "683b3a5ebd0130b8fb52ba0bdc718cc56815b6a097e28ae5a6997d0ad17dc05f"
+dependencies = [
+ "lexical-parse-integer",
+ "lexical-util",
+ "static_assertions",
+]
+
+[[package]]
+name = "lexical-parse-integer"
+version = "0.8.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d0994485ed0c312f6d965766754ea177d07f9c00c9b82a5ee62ed5b47945ee9"
+dependencies = [
+ "lexical-util",
+ "static_assertions",
+]
+
+[[package]]
+name = "lexical-util"
+version = "0.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5255b9ff16ff898710eb9eb63cb39248ea8a5bb036bea8085b1a767ff6c4e3fc"
+dependencies = [
+ "static_assertions",
+]
+
+[[package]]
+name = "lexical-write-float"
+version = "0.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "accabaa1c4581f05a3923d1b4cfd124c329352288b7b9da09e766b0668116862"
+dependencies = [
+ "lexical-util",
+ "lexical-write-integer",
+ "static_assertions",
+]
+
+[[package]]
+name = "lexical-write-integer"
+version = "0.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1b6f3d1f4422866b68192d62f77bc5c700bee84f3069f2469d7bc8c77852446"
+dependencies = [
+ "lexical-util",
+ "static_assertions",
+]
 
 [[package]]
 name = "libc"
@@ -901,6 +989,89 @@ dependencies = [
  "tracing",
  "unicode-width",
  "url",
+]
+
+[[package]]
+name = "swc_css_ast"
+version = "7.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d0993d78718d6e9e1820bb674961d8644128254d30b83dcf28389005d531024"
+dependencies = [
+ "is-macro",
+ "string_enum",
+ "swc_atoms",
+ "swc_common",
+]
+
+[[package]]
+name = "swc_css_codegen"
+version = "7.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb1259e6cbcaa400fc0aef00f8fb5533b0939081454f289143d3c236eac846d9"
+dependencies = [
+ "auto_impl",
+ "bitflags",
+ "rustc-hash 2.1.1",
+ "serde",
+ "swc_atoms",
+ "swc_common",
+ "swc_css_ast",
+ "swc_css_codegen_macros",
+ "swc_css_utils",
+]
+
+[[package]]
+name = "swc_css_codegen_macros"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "50abd25b3b79f18423cdf99b0d11dee24e64496be3b8abe18c10a2c40bd6c91f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "swc_macros_common",
+ "syn",
+]
+
+[[package]]
+name = "swc_css_parser"
+version = "7.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8e37088852126afc7381765b4c04851202a24921a294dbfac4019d8791b13a33"
+dependencies = [
+ "lexical",
+ "serde",
+ "swc_atoms",
+ "swc_common",
+ "swc_css_ast",
+]
+
+[[package]]
+name = "swc_css_utils"
+version = "7.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7bf241d1531bf55ca1a7cb5cdb96232e7b119c3908592c742b985b0abe270cc3"
+dependencies = [
+ "once_cell",
+ "rustc-hash 2.1.1",
+ "serde",
+ "serde_json",
+ "swc_atoms",
+ "swc_common",
+ "swc_css_ast",
+ "swc_css_visit",
+]
+
+[[package]]
+name = "swc_css_visit"
+version = "7.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8645f20a9202e53c40c5410b71a9cdb44e1eb814dd931e3fda451def8a727eea"
+dependencies = [
+ "serde",
+ "swc_atoms",
+ "swc_common",
+ "swc_css_ast",
+ "swc_visit",
 ]
 
 [[package]]
