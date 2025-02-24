@@ -15,3 +15,14 @@ if Mix.env() == :dev do
     ],
     version_tag_prefix: "v"
 end
+
+config :pythonx, :uv_init,
+  pyproject_toml: """
+  [project]
+  name = "igniter_py"
+  version = "0.4.4"
+  requires-python = "==3.13.*"
+  dependencies = [
+    "tinycss2==1.4.0"
+  ]
+  """
