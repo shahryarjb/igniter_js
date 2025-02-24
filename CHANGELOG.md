@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.4.5](https://github.com/ash-project/igniter_js/compare/v0.4.4...v0.4.5) (2025-02-24)
+
+
+
+
+### Features:
+
+* add JS and CSS formatters for code standardization - rust biomejs (#21)
+
 ## [v0.4.4](https://github.com/ash-project/igniter_js/compare/v0.4.3...v0.4.4) (2025-02-16)
 
 
